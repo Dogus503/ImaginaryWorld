@@ -1,13 +1,9 @@
 package com.example.imaginaryworld;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,24 +12,10 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.navigation.NavigationView;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,13 +23,15 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity{
     public DataBase dt = new DataBase(this);
     static final int GALLERY_REQUEST = 1;
-    Button btn;
+    Button btn, save, open;
     ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btn = findViewById(R.id.button);
+        btn = findViewById(R.id.newfile);
+        save = findViewById(R.id.SaveFile);
+        open = findViewById(R.id.openfile);
         listView = findViewById(R.id.listView);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
