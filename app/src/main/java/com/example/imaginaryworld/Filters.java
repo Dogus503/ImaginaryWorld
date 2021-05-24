@@ -6,9 +6,16 @@ import android.media.Image;
 import android.widget.ImageView;
 
 public class Filters {
-    public void blackOrWhite(ImageView image){
-        BitmapDrawable drawable = (BitmapDrawable)image.getDrawable();
-        Bitmap bmp = drawable.getBitmap();
+    ImageView imageView;
+    Bitmap bmp;
+    public Filters(ImageView image){
+        imageView = image;
+        BitmapDrawable abmp = (BitmapDrawable) imageView.getDrawable();
+        bmp = abmp.getBitmap();
+    }
+
+    public void blackOrWhite(){
+        Bitmap bmper = Bitmap.createBitmap(bmp.getWidth(),bmp.getHeight(), bmp.getConfig());
         float width = bmp.getWidth();
         float height = bmp.getHeight();
         for(int i = 0; i < width; i++){
@@ -17,20 +24,14 @@ public class Filters {
                 int r = Color.red(pixel);
                 int g = Color.green(pixel);
                 int b =  Color.blue(pixel);
-                if ((r + g + b) / 3 > 255){
-                    bmp.setPixel(i, j, Color.BLACK);
-                }
-                else{
-                    bmp.setPixel(i, j, Color.WHITE);
-                }
+                int value = (r + g + b) / 3;
+                bmper.setPixel(i ,j, Color.argb(Color.alpha(pixel), value, value, value));
             }
 
         }
-        image.setImageBitmap(bmp);
+        imageView.setImageBitmap(bmper);
     }
-    public void dark(ImageView im){
-        BitmapDrawable drawable = (BitmapDrawable)im.getDrawable();
-        Bitmap bmp = drawable.getBitmap();
+    public void dark(){
 
         for(int i = 0; i < bmp.getWidth(); i++){
             for(int j = 0; j < bmp.getHeight(); j++){
@@ -47,12 +48,10 @@ public class Filters {
                 bmp.setPixel(i, j, Color.argb(alpha, r, g, b));
             }
         }
-        im.setImageBitmap(bmp);
+        imageView.setImageBitmap(bmp);
     }
-    public void bright(ImageView imageView){
-        BitmapDrawable drawable = (BitmapDrawable)imageView.getDrawable();
-        Bitmap bmp = drawable.getBitmap();
-
+    public void bright(int plus){
+        Bitmap bmper = Bitmap.createBitmap(bmp.getWidth(),bmp.getHeight(), bmp.getConfig());
         for(int i = 0; i < bmp.getWidth(); i++){
             for(int j = 0; j < bmp.getHeight(); j++){
                 int p = bmp.getPixel(i, j);
@@ -61,14 +60,26 @@ public class Filters {
                 int b = Color.blue(p);
                 int alpha = Color.alpha(p);
 
-                r = 100  +  r;
-                g = 100  + g;
-                b = 100  + b;
-                alpha = 50 + alpha;
-                bmp.setPixel(i, j, Color.argb(alpha, r, g, b));
+                r = plus +  r;
+                if(r > 255){
+                    r = 255;
+                }
+                g = plus  + g;
+                if(g > 255){
+                    g = 255;
+                }
+                b = plus  + b;
+                if (b > 255){
+                    b = 255;
+                }
+                alpha = plus + alpha;
+                if (alpha > 200){
+                    alpha = 200;
+                }
+                bmper.setPixel(i, j, Color.argb(alpha, r, g, b));
             }
         }
-        imageView.setImageBitmap(bmp);
+        imageView.setImageBitmap(bmper);
     }
     public void alphaMinus(ImageView imageView){
         BitmapDrawable drawable = (BitmapDrawable)imageView.getDrawable();
