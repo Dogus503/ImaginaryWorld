@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 public class DataBase extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "imagesDb";
     public static final String TABLE_CONTACTS = "images";
 
@@ -20,8 +20,8 @@ public class DataBase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_CONTACTS + "(" + KEY_ID
-                + " integer primary key," + KEY_NAME + " text, " + KEY_IMAGE + " image" + ")");
+        db.execSQL("CREATE TABLE " + TABLE_CONTACTS + "(" + KEY_ID
+                + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEY_NAME + " TEXT, " + KEY_IMAGE + " TEXT" + ");");
 
     }
 

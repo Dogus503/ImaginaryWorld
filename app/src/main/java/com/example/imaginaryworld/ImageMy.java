@@ -1,13 +1,14 @@
 package com.example.imaginaryworld;
 
 import android.media.Image;
+import android.net.Uri;
 import android.text.Editable;
 import android.widget.ImageView;
 
 public class ImageMy {
-    ImageView imageView;
+    Uri imageView;
     String string;
-    public ImageMy(ImageView imageView1, String text){
+    public ImageMy(Uri imageView1, String text){
         this.imageView = imageView1;
         this.string = text;
     }

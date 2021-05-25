@@ -10,6 +10,8 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +21,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.net.URI;
+
 public class NewFil extends AppCompatActivity {
     ListView listView;
+    static boolean aBoolean = false;
+    static int pos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +36,14 @@ public class NewFil extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         adapterImage adapter = new adapterImage(this);
         listView.setAdapter(adapter);
+        Log.d("Me", String.valueOf(MainActivity.images.toArray().length));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ImageView imageView = findViewById(R.id.imageView);
-                imageView.setImageDrawable(MainActivity.images.get(position).imageView.getDrawable());
+                Intent intent = new Intent(NewFil.this, MainActivity.class);
+                pos = position;
+                aBoolean = true;
+                startActivity(intent);
             }
         });
     }
@@ -50,7 +60,8 @@ public class NewFil extends AppCompatActivity {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.foradapter, null);
             }
             ((TextView) convertView.findViewById(R.id.textView)).setText(MainActivity.images.get(position).string);
-            ((ImageView) convertView.findViewById(R.id.image)).setImageDrawable(MainActivity.images.get(position).imageView.getDrawable());
+            ((ImageView) convertView.findViewById(R.id.image)).setImageURI(MainActivity.images.get(position).imageView);
+            Log.d("Me", "Monster");
             return convertView;
         }
     }

@@ -3,14 +3,18 @@ package com.example.imaginaryworld;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -29,6 +33,10 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,19 +89,25 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 saveImage(editText.getText().toString());
             }
         });
+        if(NewFil.aBoolean){
+            view.setImageURI(images.get(NewFil.pos).imageView);
+            filters = new Filters(view);
+        }
     }
     public void showImage(){
         SQLiteDatabase database = dt.getWritableDatabase();
-        String[] columns = {DataBase.KEY_ID, DataBase.KEY_NAME};
+        String[] columns = {DataBase.KEY_ID, DataBase.KEY_NAME, DataBase.KEY_IMAGE};
         Cursor cursor = database.query(DataBase.TABLE_CONTACTS, columns, null,
                 null, null, null, null);
         int idColumnIndex = cursor.getColumnIndex(DataBase.KEY_ID);
         int nameColumnIndex = cursor.getColumnIndex(DataBase.KEY_NAME);
+        int imageColumnIndex = cursor.getColumnIndex(DataBase.KEY_IMAGE);
         if(cursor.moveToFirst()){
             while(cursor.moveToNext()){
                 int currentID = cursor.getInt(idColumnIndex);
                 String currentName = cursor.getString(nameColumnIndex);
-                array.add(currentName);
+                String currentImage = cursor.getString(imageColumnIndex);
+                images.add(new ImageMy(Uri.fromFile(new File(currentImage, currentName)), currentName));
             }
         }
         Intent intent = new Intent(this, NewFil.class);
@@ -137,29 +151,21 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         filters.bright(seekBar.getProgress());
     }
 
-    private static class adapterImage extends ArrayAdapter<ImageMy>{
-
-
-        public adapterImage(Context context) {
-            super(context, R.layout.foradapter, images);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if(convertView == null){
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.foradapter, null);
-            }
-            ((TextView) convertView.findViewById(R.id.textView)).setText(images.get(position).string);
-            ((ImageView) convertView.findViewById(R.id.image)).setImageDrawable(images.get(position).imageView.getDrawable());
-            return convertView;
-        }
-    }
     public void saveImage(String name){
-        SQLiteDatabase database = dt.getWritableDatabase();
-        String[] columns = {DataBase.KEY_ID, DataBase.KEY_NAME};
-        images.add(new ImageMy(view, name));
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DataBase.KEY_NAME, name);
-        database.insert(DataBase.TABLE_CONTACTS, null, contentValues);
+        try{
+            File file = new File(getFilesDir(), name);
+            if(file.createNewFile()){
+                SQLiteDatabase database = dt.getWritableDatabase();
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(DataBase.KEY_NAME, name);
+                contentValues.put(DataBase.KEY_IMAGE, file.getParent());
+                database.insert(DataBase.TABLE_CONTACTS, null, contentValues);
+                File files = new File(file.getParent(), name);
+                System.out.println(files.isFile());
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
