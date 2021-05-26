@@ -60,8 +60,8 @@ public class NewFil extends AppCompatActivity {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.foradapter, null);
             }
             ((TextView) convertView.findViewById(R.id.textView)).setText(MainActivity.images.get(position).string);
-            ((ImageView) convertView.findViewById(R.id.image)).setImageURI(MainActivity.images.get(position).imageView);
-            Log.d("Me", "Monster");
+           // ((ImageView) convertView.findViewById(R.id.image)).setImageURI(MainActivity.images.get(position).imageView);
+            ((ImageView) convertView.findViewById(R.id.image)).setImageDrawable(MainActivity.images.get(position).drawable);
             return convertView;
         }
     }

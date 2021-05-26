@@ -3,14 +3,13 @@ package com.example.imaginaryworld;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
@@ -46,11 +45,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     static final int GALLERY_REQUEST = 1;
     Button btn, save, open, butt;
     public static ArrayList<ImageMy> images = new ArrayList<>();
-    ArrayList<String> array = new ArrayList<>();
+    ArrayList<Drawable> array = new ArrayList<>();
     EditText editText;
     Filters filters;
     ImageView view;
-    SeekBar seekBar;
+    SeekBar seekBar, seekBar1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +57,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         btn = findViewById(R.id.newfile);
         view = findViewById(R.id.imageView);
         save = findViewById(R.id.SaveFile);
+        seekBar1 = findViewById(R.id.seekBar2);
         seekBar = findViewById(R.id.seekBar);
+        seekBar.setProgress(75);
         open = findViewById(R.id.openfile);
         butt = findViewById(R.id.button);
         editText = findViewById(R.id.EditText);
@@ -90,9 +91,25 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             }
         });
         if(NewFil.aBoolean){
-            view.setImageURI(images.get(NewFil.pos).imageView);
+            view.setImageDrawable(images.get(NewFil.pos).drawable);
             filters = new Filters(view);
         }
+        seekBar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                filters.contrast(seekBar.getProgress());
+            }
+        });
     }
     public void showImage(){
         SQLiteDatabase database = dt.getWritableDatabase();
@@ -107,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 int currentID = cursor.getInt(idColumnIndex);
                 String currentName = cursor.getString(nameColumnIndex);
                 String currentImage = cursor.getString(imageColumnIndex);
-                images.add(new ImageMy(Uri.fromFile(new File(currentImage, currentName)), currentName));
+                //images.add(new ImageMy(Uri.fromFile(new File(currentImage, currentName)), currentName));
             }
         }
         Intent intent = new Intent(this, NewFil.class);
@@ -119,9 +136,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-
         Bitmap bitmap = null;
-
         if (requestCode == GALLERY_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Uri selectedImage = imageReturnedIntent.getData();
@@ -148,11 +163,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        filters.bright(seekBar.getProgress());
+        filters.bright(seekBar.getProgress() - 75);
     }
 
     public void saveImage(String name){
         try{
+            images.add(new ImageMy(view.getDrawable(), name));
             File file = new File(getFilesDir(), name);
             if(file.createNewFile()){
                 SQLiteDatabase database = dt.getWritableDatabase();
